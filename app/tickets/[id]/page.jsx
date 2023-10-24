@@ -19,6 +19,10 @@ export async function generateStaticParams(){
 
 //fetch data outsid the rendered material
 async function getTicket(id) {
+
+    //create loading
+    await new Promise(resolve => setTimeout(resolve, 3000))
+
     const response = await fetch(`${baseURL}`, {next:{revalidate:60}})
 
     //send to page 404 if page not found or release const data

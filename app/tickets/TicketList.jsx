@@ -9,6 +9,9 @@ async function getTickets() {
 
 export default async function TicketList() {
 
+    //create loading
+    await new Promise(resolve => setTimeout(resolve, 3000))
+
     //initialize response data to be used in the render statement
     const tickets = await getTickets()
 
