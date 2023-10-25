@@ -2,6 +2,12 @@ import React,{Suspense} from 'react'
 import Loading from '../loading'
 import TicketList from './TicketList'
 
+export const metadata = {
+  title: 'Virtue Helpdesk | Tickets',
+  description: 'Description of the tickets',
+}
+
+
 export default function Tickets() {
   return (
     <main>

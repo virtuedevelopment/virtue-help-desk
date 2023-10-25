@@ -2,10 +2,17 @@ import { notFound } from 'next/navigation';
 import React from 'react'
 
 
+
 // Define the base URL
 const baseURL = 'https://gist.githubusercontent.com/virtuedevelopment/d1479fe911d377c35686fff1ea582eac/raw/6903abce75da26f55f378ecec674ad18430248ee/';
 
 export const dynamicParams = true
+
+export async function generateMetadata({params}){
+    return{
+        title: `Virtue Helpdesk | Ticket id: #${params.id}`
+    }
+}
 
 export async function generateStaticParams(){
     const res = await fetch(`${baseURL}`)
