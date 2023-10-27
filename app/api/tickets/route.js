@@ -1,22 +1,31 @@
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
 import { NextResponse } from "next/server"
+import { cookies } from "next/headers"
 
 export const dynamic = 'force-dynamic'
-export async function GET(){
-    const response = await fetch('https://gist.githubusercontent.com/virtuedevelopment/d1479fe911d377c35686fff1ea582eac/raw/6903abce75da26f55f378ecec674ad18430248ee/db.json')
-    const tickets = await response.json()
 
-    return NextResponse.json(tickets,{status:200})
-
-}
 
 export async function POST(request){
     const ticket = await request.json()
-    const response = await fetch('https://gist.githubusercontent.com/virtuedevelopment/d1479fe911d377c35686fff1ea582eac/raw/6903abce75da26f55f378ecec674ad18430248ee/db.json',{
-            method: "POST",
-            headers: {"content-type": "application/json"},
-            body: JSON.stringify(ticket)
-    })
+    
+    //get supabase instance
+    const supabase = createRouteHandlerClient({cookies})
 
-    const newTicket = await response.json()
-    return NextResponse.json(newTicket,{status:201})
+
+    //get current user session
+    const { data:{ session } } = await supabase.auth.getSession()
+    
+
+    //insert the data into supabase
+    const { data: tickets, error } = await supabase.from('tickets')
+        .insert({
+            Title: ticket.title,
+            Body: ticket.body,
+            Priority: ticket.priority,
+            user_email: session.user.email
+        })
+        .select()
+        .single()
+        
+    return NextResponse.json({ tickets,error })
 }

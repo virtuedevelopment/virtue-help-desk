@@ -1,10 +1,13 @@
 "use client"
+
 import React, {useState} from 'react'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 
 export default function CreateForm() {
-   // const router = useRouter()
+    
+    const router = useRouter()
 
+    const [ticketError, setTicketError] = useState('')
     const [title, setTitle] = useState('')
     const [body, setBody]  = useState('')
     const [priority, setPriority]  = useState('low')
@@ -15,19 +18,25 @@ export default function CreateForm() {
         e.preventDefault()
         setIsLoading(true)
 
-        const ticket = {
-            title, body, priority, user_email: 'myguy@gmail.com'
-        }
+        const ticket = {title, body, priority}
 
-        const response = await fetch('https://gist.githubusercontent.com/virtuedevelopment/d1479fe911d377c35686fff1ea582eac/raw/6903abce75da26f55f378ecec674ad18430248ee/db.json',{
+        const response = await fetch('http://localhost:3000/api/tickets',{
             method: "POST",
-            headers: {"content-type": "application/json"},
+            headers:{"Content-Type": "application/json"},
             body: JSON.stringify(ticket)
         })
 
-        if (response.status === 201){
+        const json = await response.json()
+
+        if(!json.error === null){
+            setIsLoading(false)
+            setTicketError(true)
+        }
+        if (json.tickets){
+            router.refresh()
             router.push('/tickets')
         }
+
     }
 
   return (
@@ -67,6 +76,7 @@ export default function CreateForm() {
             {isLoading && <span>Adding...</span>}
             {!isLoading && <span>Add Ticket</span>}
             </button>
+            {ticketError && (<div className='text-center error'>Error uploading your ticket</div>)}
     </form>
   )
 }

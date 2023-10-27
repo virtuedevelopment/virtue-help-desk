@@ -1,16 +1,22 @@
 import React from 'react'
 import Link from 'next/link'
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import {cookies} from 'next/headers'
 
 //fetch data outsid the rendered material
 async function getTickets() {
-    const response = await fetch('https://gist.githubusercontent.com/virtuedevelopment/d1479fe911d377c35686fff1ea582eac/raw/6903abce75da26f55f378ecec674ad18430248ee/db.json', {next:{revalidate:0}})
-    return response.json()
+    const supabase = createServerComponentClient({cookies})
+    const {data,error} = await supabase.from('tickets')
+    .select()
+
+    if (error){
+        console.log(error.message)
+    }
+
+    return data
 }
 
 export default async function TicketList() {
-
-    //create loading
-    await new Promise(resolve => setTimeout(resolve, 3000))
 
     //initialize response data to be used in the render statement
     const tickets = await getTickets()
@@ -20,10 +26,10 @@ export default async function TicketList() {
        {tickets.map((ticket) => (
             <div key={ticket.id} className='card my-5' >
                 <Link href={`/tickets/${ticket.id}`}>
-                    <h3>{ticket.title}</h3>
-                    <p>{ticket.body.slice(0,200)}...</p>
-                    <div className={`pill ${ticket.priority}`}>
-                        {ticket.priority} priority
+                    <h3>{ticket.Title}</h3>
+                    <p>{ticket.Body.slice(0,200)}...</p>
+                    <div className={`pill ${ticket.Priority}`}>
+                        {ticket.Priority} priority
                     </div>
                 </Link>
             </div>
